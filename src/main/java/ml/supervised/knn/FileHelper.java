@@ -1,5 +1,7 @@
 package ml.supervised.knn;
 
+import static ml.supervised.knn.Util.listToArray;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -36,27 +38,19 @@ class FileHelper {
     }
 
     private Matrix file2matrix(String fileName) throws IOException {
-        int numberOfLines = getNumberOfLines(fileName);
-        double[][] result = null;
+        List<double[]> list = new ArrayList<>();
         try (BufferedReader reader = getReader(fileName)) {
             String line;
-            String[] values;
-            int lineNumber = 0;
-            boolean first = true;
             while ((line = reader.readLine()) != null) {
-                values = line.split("\t");
-                if (first) {
-                    int numberOfFeatures = values.length - 1;
-                    result = new double[numberOfLines][numberOfFeatures];
-                    first = false;
-                }
+                String[] values = line.split("\t");
+                double[] row = new double[values.length];
                 for (int i = 0; i < values.length - 1; i++) {
-                    result[lineNumber][i] = Double.parseDouble(values[i]);
+                    row[i] = Double.parseDouble(values[i]);
                 }
-                lineNumber++;
+                list.add(row);
             }
         }
-        return new Matrix(result);
+        return new Matrix(listToArray(list));
     }
 
     private List<Integer> getClassLabels(String fileName) throws FileNotFoundException, IOException {
