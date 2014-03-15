@@ -16,7 +16,7 @@ public class KMeansClustering {
     public static void main(String[] args) throws IOException {
         KMeansClustering clustering = new KMeansClustering();
         Matrix dataSet = clustering.loadDataSet("/clusteringTestSet.txt");
-        clustering.kMeans(dataSet, 4);
+        Result kMeans = clustering.kMeans(dataSet, 4);
     }
 
     public Matrix biKmeans(Matrix dataSet, int k) {
@@ -51,7 +51,7 @@ public class KMeansClustering {
         return clusterAssment;
     }
 
-    public Matrix kMeans(Matrix dataSet, int k) {
+    public Result kMeans(Matrix dataSet, int k) {
         Matrix clusterAssment = new Matrix(dataSet.getRowDimension(), 2);
         Matrix centroids = randCent(dataSet, k);
         boolean clusterChanged = true;
@@ -81,11 +81,10 @@ public class KMeansClustering {
         }
         System.out.println("clusterAssment: " + Arrays.deepToString(clusterAssment.getArray()));
         System.out.println("centroids: " + Arrays.deepToString(centroids.getArray()));
-        return centroids;
-        // return centroids, clusterAssment
+        return new Result(centroids, clusterAssment);
     }
 
-    private Matrix loadDataSet(String fileName) throws IOException {
+    Matrix loadDataSet(String fileName) throws IOException {
         List<double[]> list = new ArrayList<>();
         try (BufferedReader reader = getReader(fileName)) {
             String line;
@@ -112,8 +111,8 @@ public class KMeansClustering {
     public Matrix randCent(Matrix dataSet, int k) {
         int n = dataSet.getColumnDimension();
         Matrix centroids = new Matrix(k, n);
-        for (int i = 0; i < n; i++) {
-            Matrix column = getColumn(dataSet, i);
+        for (int c = 0; c < n; c++) {
+            Matrix column = getColumn(dataSet, c);
             double[] columnArray = column.getColumnPackedCopy();
             double min = Double.MAX_VALUE;
             double max = Double.MIN_VALUE;
@@ -129,6 +128,9 @@ public class KMeansClustering {
             double range = max - min;
             for (int j = 0; j < columnArray.length; j++) {
                 columnArray[j] = min + range * Math.random();
+            }
+            for (int r = 0; r < centroids.getRowDimension(); r++) {
+                centroids.set(r, c, min + range * Math.random());
             }
         }
         return centroids;
