@@ -1,11 +1,10 @@
 package ml.supervised.knn;
 
+import static ml.supervised.knn.Util.getReader;
 import static ml.supervised.knn.Util.listToArray;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +21,10 @@ import Jama.Matrix;
 class FileHelper {
 
     private final Matrix matrix;
-    private final List<Integer> classLabels;
+    private final List<Integer> classLabels = new ArrayList<>();
 
     public FileHelper(String fileName) throws IOException {
-        matrix = file2matrix(fileName);
-        classLabels = getClassLabels(fileName);
+        matrix = loadDataSet(fileName);
     }
 
     public Matrix getMatrix() {
@@ -37,7 +35,7 @@ class FileHelper {
         return classLabels;
     }
 
-    private Matrix file2matrix(String fileName) throws IOException {
+    private Matrix loadDataSet(String fileName) throws IOException {
         List<double[]> list = new ArrayList<>();
         try (BufferedReader reader = getReader(fileName)) {
             String line;
@@ -48,34 +46,9 @@ class FileHelper {
                     row[i] = Double.parseDouble(values[i]);
                 }
                 list.add(row);
+                classLabels.add(Integer.parseInt(values[values.length - 1]));
             }
         }
         return new Matrix(listToArray(list));
-    }
-
-    private List<Integer> getClassLabels(String fileName) throws FileNotFoundException, IOException {
-        List<Integer> classLabels = new ArrayList<>();
-        try (BufferedReader reader = getReader(fileName)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] split = line.split("\t");
-                classLabels.add(Integer.parseInt(split[split.length - 1]));
-            }
-        }
-        return classLabels;
-    }
-
-    private int getNumberOfLines(String fileName) throws IOException, FileNotFoundException {
-        try (BufferedReader reader = getReader(fileName)) {
-            int numberOfLines = 0;
-            while (reader.readLine() != null) {
-                numberOfLines++;
-            }
-            return numberOfLines;
-        }
-    }
-
-    private BufferedReader getReader(String fileName) throws FileNotFoundException {
-        return new BufferedReader(new InputStreamReader(KNNClassification.class.getResourceAsStream(fileName)));
     }
 }
