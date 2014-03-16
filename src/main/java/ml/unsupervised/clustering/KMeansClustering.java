@@ -51,37 +51,56 @@ public class KMeansClustering {
         return clusterAssment;
     }
 
-    public Result kMeans(Matrix dataSet, int k) {
+    public Result kMeans(Matrix dataSet, int clusterNumber) {
         Matrix clusterAssment = new Matrix(dataSet.getRowDimension(), 2);
-        Matrix centroids = randCent(dataSet, k);
+        Matrix centroids = randCent(dataSet, clusterNumber);
         boolean clusterChanged = true;
         while (clusterChanged) {
             clusterChanged = false;
-            for (int i = 0; i < dataSet.getRowDimension(); i++) {
+            for (int r = 0; r < dataSet.getRowDimension(); r++) {
                 double minDist = Double.MAX_VALUE;
                 int minIndex = -1;
-                for (int j = 0; j < k; j++) {
-                    double distJI = distEclud(centroids.getArray()[j], dataSet.getArray()[i]);
+                for (int j = 0; j < clusterNumber; j++) {
+                    double distJI = distEclud(centroids.getArray()[j], dataSet.getArray()[r]);
                     if (distJI < minDist) {
                         minDist = distJI;
                         minIndex = j;
                     }
                 }
-                if (clusterAssment.get(i, 0) != minIndex) {
+                if (clusterAssment.get(r, 0) != minIndex) {
                     clusterChanged = true;
                 }
-                clusterAssment.set(i, 0, minIndex);
-                clusterAssment.set(i, 1, minDist * minDist);
+                clusterAssment.set(r, 0, minIndex);
+                clusterAssment.set(r, 1, minDist * minDist);
             }
             System.out.println("centroids: " + Arrays.deepToString(centroids.getArray()));
-            for (int i = 0; i < k; i++) {
-                // ptsInClust = dataSet[nonzero(clusterAssment[:,0].A==cent)[0]]#get all the point in this cluster
-                // centroids[cent,:] = mean(ptsInClust, axis=0) #assign centroid to mean
+
+            // Update centroid location
+            for (int clN = 0; clN < clusterNumber; clN++) {
+                List<Double> clusterPointsX = new ArrayList<>();
+                List<Double> clusterPointsY = new ArrayList<>();
+                for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
+                    if (clusterAssment.get(r, 0) == clN) {
+                        clusterPointsX.add(dataSet.get(r, 0));
+                        clusterPointsY.add(dataSet.get(r, 1));
+                    }
+                }
+                centroids.set(clN, 0, mean(clusterPointsX));
+                centroids.set(clN, 1, mean(clusterPointsY));
             }
+            System.out.println("centroids2: " + Arrays.deepToString(centroids.getArray()));
         }
         System.out.println("clusterAssment: " + Arrays.deepToString(clusterAssment.getArray()));
         System.out.println("centroids: " + Arrays.deepToString(centroids.getArray()));
         return new Result(centroids, clusterAssment);
+    }
+
+    private double mean(List<Double> list) {
+        double sum = 0;
+        for (Double val : list) {
+            sum += val;
+        }
+        return sum / list.size();
     }
 
     Matrix loadDataSet(String fileName) throws IOException {
@@ -126,9 +145,6 @@ public class KMeansClustering {
                 }
             }
             double range = max - min;
-            for (int j = 0; j < columnArray.length; j++) {
-                columnArray[j] = min + range * Math.random();
-            }
             for (int r = 0; r < centroids.getRowDimension(); r++) {
                 centroids.set(r, c, min + range * Math.random());
             }
