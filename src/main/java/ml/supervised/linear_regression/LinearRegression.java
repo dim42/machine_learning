@@ -1,58 +1,36 @@
 package ml.supervised.linear_regression;
 
-import static ml.supervised.knn.Util.getReader;
-import static ml.supervised.knn.Util.listToArray;
+import static ml.util.Util.toOneDimArray;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
+import ml.supervised.knn.FileHelper;
+import Jama.LUDecomposition;
 import Jama.Matrix;
 
 public class LinearRegression {
-    public static void main(String[] args) {
 
+    static final String INPUT_FILE_NAME = "/LinearRegressionDataSet.txt";
+
+    public static void main(String[] args) throws IOException {
+        FileHelper fileHelper = new FileHelper(INPUT_FILE_NAME);
+        Matrix matrix = fileHelper.getMatrix();
+        List<Double> outputValues = fileHelper.getOutputValues();
+        LinearRegression linearRegression = new LinearRegression();
+        Matrix ws = linearRegression.standRegres(matrix, outputValues);
+        System.out.println(ws);
     }
 
-    private Matrix loadDataSet(String fileName) throws IOException {
-        List<double[]> list = new ArrayList<>();
-        try (BufferedReader reader = getReader(fileName)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] values = line.split("\t");
-                double[] row = new double[values.length];
-                for (int i = 0; i < values.length; i++) {
-                    row[i] = Double.parseDouble(values[i]);
-                }
-                list.add(row);
-            }
+    public Matrix standRegres(Matrix matrix, List<Double> outputValues) {
+        Matrix xTx = matrix.transpose().times(matrix);
+        if (new LUDecomposition(xTx).det() == 0.0) {
+            throw new IllegalArgumentException("This matrix is singular, cannot do inverse");
         }
-        return new Matrix(listToArray(list));
+        Matrix yMat = new Matrix(toOneDimArray(outputValues), 1);
+        yMat = yMat.transpose();
+        return xTx.inverse().times(matrix.transpose().times(yMat));
     }
-
-    // def loadDataSet(fileName):
-    // numFeat = len(open(fileName).readline().split('\t')) - 1
-    // dataMat = []; labelMat = []
-    // fr = open(fileName)
-    // for line in fr.readlines():
-    // lineArr =[]
-    // curLine = line.strip().split('\t')
-    // for i in range(numFeat):
-    // Finding best-fit lines with linear regression
-    // 157
-    // lineArr.append(float(curLine[i]))
-    // dataMat.append(lineArr)
-    // labelMat.ppend(float(curLine[-1]))
-    // return dataMat,labelMat
-    //
-    // public void standRegres(xArr,yArr){
-    // xMat = mat(xArr); yMat = mat(yArr).T
-    // xTx = xMat.T*xMat
-    // if linalg.det(xTx) == 0.0:
-    // print "This matrix is singular, cannot do inverse"
-    // return
-    // }
 
     // def lwlr(testPoint,xArr,yArr,k=1.0):
     // xMat = mat(xArr); yMat = mat(yArr).T
