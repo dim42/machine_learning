@@ -12,11 +12,12 @@ import Jama.Matrix;
 
 public class KMeansClustering {
 
-    private static final int CLUSTER_NUMBER = 4;
+    static final String INPUT_FILE_NAME = "/clusteringTestSet.txt";
+    static final int CLUSTER_NUMBER = 4;
 
     public static void main(String[] args) throws IOException {
         KMeansClustering clustering = new KMeansClustering();
-        Matrix dataSet = clustering.loadDataSet("/clusteringTestSet.txt");
+        Matrix dataSet = clustering.loadDataSet(INPUT_FILE_NAME);
 
         KMeansResult result = clustering.kMeans(dataSet, CLUSTER_NUMBER);
         System.out.println("result: " + result);
