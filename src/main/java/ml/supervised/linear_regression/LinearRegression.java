@@ -16,21 +16,24 @@ public class LinearRegression {
 
     public static void main(String[] args) throws IOException {
         FileHelper fileHelper = new FileHelper(INPUT_FILE_NAME);
-        Matrix matrix = fileHelper.getMatrix();
+        Matrix inputValues = fileHelper.getMatrix();
         List<Double> outputValues = fileHelper.getOutputValues();
         LinearRegression linearRegression = new LinearRegression();
-        Matrix ws = linearRegression.standRegres(matrix, outputValues);
+        Matrix ws = linearRegression.standRegres(inputValues, outputValues);
         System.out.println(matrixToString(ws));
+
+        Matrix predicted = inputValues.times(ws);
+        System.out.println(matrixToString(predicted));
     }
 
-    public Matrix standRegres(Matrix matrix, List<Double> outputValues) {
-        Matrix xTx = matrix.transpose().times(matrix);
+    public Matrix standRegres(Matrix inputValues, List<Double> outputValues) {
+        Matrix xTx = inputValues.transpose().times(inputValues);
         if (new LUDecomposition(xTx).det() == 0.0) {
             throw new IllegalArgumentException("This matrix is singular, cannot do inverse");
         }
         Matrix yMat = new Matrix(toOneDimArray(outputValues), 1);
         yMat = yMat.transpose();
-        return xTx.inverse().times(matrix.transpose().times(yMat));
+        return xTx.inverse().times(inputValues.transpose().times(yMat));
     }
 
     // def lwlr(testPoint,xArr,yArr,k=1.0):
