@@ -29,7 +29,7 @@ public class ClusteringChart extends Application {
 
         KMeansClustering clustering = new KMeansClustering();
         Matrix dataSet = clustering.loadDataSet("/clusteringTestSet.txt");
-        Result kMeans = clustering.kMeans(dataSet, 4);
+        KMeansResult kMeans = clustering.kMeans(dataSet, 4);
 
         Matrix centroids = kMeans.getCentroids();
         XYChart.Series<Number, Number> centroidsPoints = new XYChart.Series<Number, Number>();

@@ -6,17 +6,24 @@ import static ml.supervised.knn.Util.listToArray;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import Jama.Matrix;
 
 public class KMeansClustering {
 
+    private static final int CLUSTER_NUMBER = 4;
+
     public static void main(String[] args) throws IOException {
         KMeansClustering clustering = new KMeansClustering();
         Matrix dataSet = clustering.loadDataSet("/clusteringTestSet.txt");
-        Result kMeans = clustering.kMeans(dataSet, 4);
+
+        KMeansResult result = clustering.kMeans(dataSet, CLUSTER_NUMBER);
+        System.out.println("result: " + result);
+
+        PointsByClusters pointsByClusters = clustering.pointsByClusters(dataSet, result.getClusterAssment(),
+                CLUSTER_NUMBER);
+        System.out.println(pointsByClusters);
     }
 
     public Matrix biKmeans(Matrix dataSet, int k) {
@@ -51,9 +58,9 @@ public class KMeansClustering {
         return clusterAssment;
     }
 
-    public Result kMeans(Matrix dataSet, int clusterNumber) {
+    public KMeansResult kMeans(Matrix dataSet, int clusterNumber) {
         Matrix clusterAssment = new Matrix(dataSet.getRowDimension(), 2);
-        Matrix centroids = randCent(dataSet, clusterNumber);
+        Matrix centroids = generateRandomCentroids(dataSet, clusterNumber);
         boolean clusterChanged = true;
         while (clusterChanged) {
             clusterChanged = false;
@@ -73,7 +80,6 @@ public class KMeansClustering {
                 clusterAssment.set(r, 0, minIndex);
                 clusterAssment.set(r, 1, minDist * minDist);
             }
-            System.out.println("centroids: " + Arrays.deepToString(centroids.getArray()));
 
             // Update centroid location
             for (int clN = 0; clN < clusterNumber; clN++) {
@@ -88,11 +94,23 @@ public class KMeansClustering {
                 centroids.set(clN, 0, mean(clusterPointsX));
                 centroids.set(clN, 1, mean(clusterPointsY));
             }
-            System.out.println("centroids2: " + Arrays.deepToString(centroids.getArray()));
         }
-        System.out.println("clusterAssment: " + Arrays.deepToString(clusterAssment.getArray()));
-        System.out.println("centroids: " + Arrays.deepToString(centroids.getArray()));
-        return new Result(centroids, clusterAssment);
+        return new KMeansResult(centroids, clusterAssment);
+    }
+
+    public PointsByClusters pointsByClusters(Matrix dataSet, Matrix clusterAssment, int clusterNumber) {
+        PointsByClusters result = new PointsByClusters();
+        for (int clN = 0; clN < clusterNumber; clN++) {
+            List<double[]> clusterPoints = new ArrayList<>();
+            for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
+                if (clusterAssment.get(r, 0) == clN) {
+                    double[] point = dataSet.getArray()[r];
+                    clusterPoints.add(point);
+                }
+            }
+            result.put(clN, clusterPoints);
+        }
+        return result;
     }
 
     private double mean(List<Double> list) {
@@ -127,7 +145,7 @@ public class KMeansClustering {
         return Math.sqrt(sum);
     }
 
-    public Matrix randCent(Matrix dataSet, int k) {
+    public Matrix generateRandomCentroids(Matrix dataSet, int k) {
         int n = dataSet.getColumnDimension();
         Matrix centroids = new Matrix(k, n);
         for (int c = 0; c < n; c++) {
