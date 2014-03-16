@@ -1,5 +1,6 @@
 package ml.supervised.linear_regression;
 
+import static ml.util.Util.matrixToString;
 import static ml.util.Util.toOneDimArray;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class LinearRegression {
         List<Double> outputValues = fileHelper.getOutputValues();
         LinearRegression linearRegression = new LinearRegression();
         Matrix ws = linearRegression.standRegres(matrix, outputValues);
-        System.out.println(ws);
+        System.out.println(matrixToString(ws));
     }
 
     public Matrix standRegres(Matrix matrix, List<Double> outputValues) {
