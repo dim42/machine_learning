@@ -1,7 +1,7 @@
 package ml.unsupervised.clustering;
 
-import static ml.supervised.knn.Util.getReader;
-import static ml.supervised.knn.Util.listToArray;
+import static ml.util.Util.getReader;
+import static ml.util.Util.toTwoDimArray;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -135,7 +135,7 @@ public class KMeansClustering {
                 list.add(row);
             }
         }
-        return new Matrix(listToArray(list));
+        return new Matrix(toTwoDimArray(list));
     }
 
     public double distEclud(double[] vecA, double[] vecB) {

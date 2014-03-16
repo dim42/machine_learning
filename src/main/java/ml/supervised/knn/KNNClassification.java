@@ -1,7 +1,7 @@
 package ml.supervised.knn;
 
-import static ml.supervised.knn.Util.argsort;
-import static ml.supervised.knn.Util.arrayToMatrix;
+import static ml.util.Util.argsort;
+import static ml.util.Util.arrayToMatrix;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,9 +28,11 @@ public class KNNClassification {
      * is to take some portion, say 90%, to train the classifier. Then you’ll take the remaining 10% to test the
      * classifier and see how accurate it is.
      * 
+     * @return
+     * 
      * @throws IOException
      */
-    public void classifyTest() throws IOException {
+    public int classifyTest() throws IOException {
         FileHelper fileHelper = new FileHelper(INPUT_FILE_NAME);
         Matrix dataSet = fileHelper.getMatrix();
         Matrix normMat = autoNormalize(dataSet);
@@ -62,6 +64,7 @@ public class KNNClassification {
         // The classifier came back with: 2, the real answer is: 2
         // The total error rate is: 0.068
         // Error number: 34
+        return errorCount;
     }
 
     public int classify(double[] inX, Matrix dataSet, List<Integer> labels, int k) {

@@ -1,7 +1,6 @@
 package ml.unsupervised.clustering;
 
-import java.util.Arrays;
-
+import static ml.util.Util.matrixToString;
 import Jama.Matrix;
 
 public class KMeansResult {
@@ -23,7 +22,7 @@ public class KMeansResult {
 
     @Override
     public String toString() {
-        return "KMeansResult [centroids=" + Arrays.deepToString(centroids.getArray()) + ",\nclusterAssment="
-                + Arrays.deepToString(clusterAssment.getArray()) + "]";
+        return "KMeansResult [centroids=" + matrixToString(centroids) + ",\nclusterAssment="
+                + matrixToString(clusterAssment) + "]";
     }
 }

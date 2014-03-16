@@ -1,4 +1,4 @@
-package ml.supervised.knn;
+package ml.util;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import ml.supervised.knn.KNNClassification;
 import Jama.Matrix;
 
 public class Util {
@@ -19,7 +20,15 @@ public class Util {
         return new Matrix(result);
     }
 
-    public static double[][] listToArray(List<double[]> list) {
+    public static double[] toOneDimArray(List<Double> yVals) {
+        double[] array = new double[yVals.size()];
+        for (int j = 0; j < yVals.size(); j++) {
+            array[j] = yVals.get(j);
+        }
+        return array;
+    }
+
+    public static double[][] toTwoDimArray(List<double[]> list) {
         double[][] array = new double[list.size()][];
         for (int i = 0; i < list.size(); i++) {
             array[i] = list.get(i);
@@ -43,5 +52,9 @@ public class Util {
             }
         });
         return indexes;
+    }
+
+    public static String matrixToString(Matrix matrix) {
+        return Arrays.deepToString(matrix.getArray());
     }
 }
