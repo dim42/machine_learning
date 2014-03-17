@@ -27,16 +27,24 @@ public class KMeansClustering {
         System.out.println(pointsByClusters);
     }
 
-    public Matrix biKmeans(Matrix dataSet, int k) {
+    public KMeansResult biKmeans(Matrix dataSet, int clusterNumber) {
+        // Initially create one cluster
         Matrix clusterAssment = new Matrix(dataSet.getRowDimension(), 2);
-        // centroid0 = mean(dataSet, axis=0).tolist()[0]
-        // centList =[centroid0] #create a list with one centroid
-        for (int i = 0; i < dataSet.getRowDimension(); i++) {
-            // clusterAssment[j,1] = distEclud(mat(centroid0), dataSet[j,:])**2
+        double[] xColumnArray = getColumn(dataSet, 0).getColumnPackedCopy();
+        double xMean = mean(xColumnArray);
+        double[] yColumnArray = getColumn(dataSet, 1).getColumnPackedCopy();
+        double yMean = mean(yColumnArray);
+        double[] centroid0 = new double[] { xMean, yMean };
+        List<double[]> centList = new ArrayList<>();
+        centList.add(centroid0);
+        for (int r = 0; r < dataSet.getRowDimension(); r++) {
+            double dist = distEclud(centroid0, dataSet.getArray()[r]);
+            clusterAssment.set(r, 1, dist * dist);
         }
-        // while (len(centList) < k):
+
+        while (centList.size() < clusterNumber) {
         // lowestSSE = inf
-        // for i in range(len(centList)):
+            for (int i = 0; i < centroid0.length; i++) {
         // ptsInCurrCluster = dataSet[nonzero(clusterAssment[:,0].A==i)[0],:]#get the data points currently in cluster i
         // centroidMat, splitClustAss = kMeans(ptsInCurrCluster, 2)
         // sseSplit = sum(splitClustAss[:,1])#compare the SSE to the currrent minimum
@@ -47,6 +55,7 @@ public class KMeansClustering {
         // bestNewCents = centroidMat
         // bestClustAss = splitClustAss.copy()
         // lowestSSE = sseSplit + sseNotSplit
+            }
         // bestClustAss[nonzero(bestClustAss[:,0].A == 1)[0],0] = len(centList) #change 1 to 3,4, or whatever
         // bestClustAss[nonzero(bestClustAss[:,0].A == 0)[0],0] = bestCentToSplit
         // print 'the bestCentToSplit is: ',bestCentToSplit
@@ -55,8 +64,9 @@ public class KMeansClustering {
         // centList.append(bestNewCents[1,:].tolist()[0])
         // clusterAssment[nonzero(clusterAssment[:,0].A == bestCentToSplit)[0],:]= bestClustAss#reassign new clusters,
         // and SSE
+        }
         // return mat(centList), clusterAssment
-        return clusterAssment;
+        return new KMeansResult(new Matrix(toTwoDimArray(centList)), clusterAssment);
     }
 
     public KMeansResult kMeans(Matrix dataSet, int clusterNumber) {
@@ -112,6 +122,14 @@ public class KMeansClustering {
             result.put(clN, clusterPoints);
         }
         return result;
+    }
+
+    private double mean(double[] list) {
+        double sum = 0;
+        for (double val : list) {
+            sum += val;
+        }
+        return sum / list.length;
     }
 
     private double mean(List<Double> list) {
