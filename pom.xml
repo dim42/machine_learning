@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.ml</groupId>
-  <artifactId>maching_learning</artifactId>
+  <artifactId>machine_learning</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>maching_learning</name>
+  <name>machine_learning</name>
   <url>http://maven.apache.org</url>
 
   <properties>
