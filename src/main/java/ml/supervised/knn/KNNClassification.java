@@ -15,7 +15,7 @@ import Jama.Matrix;
 
 public class KNNClassification {
     private static final String INPUT_FILE_NAME = "/KNNClassificationDataSet.txt";
-    private static final double TEST_RATIO = 0.5;
+    private static final double TEST_RATIO = 0.2;
     private static final int K_NUMBER = 3;
 
     public static void main(String[] args) throws IOException {
@@ -62,8 +62,8 @@ public class KNNClassification {
         // The classifier came back with: 1, the real answer is: 1
         // The classifier came back with: 1, the real answer is: 1
         // The classifier came back with: 2, the real answer is: 2
-        // The total error rate is: 0.068
-        // Error number: 34
+        // The total error rate is: 0.072
+        // Error number: 36
         return errorCount;
     }
 

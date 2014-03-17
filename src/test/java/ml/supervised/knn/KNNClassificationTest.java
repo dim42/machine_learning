@@ -12,6 +12,6 @@ public class KNNClassificationTest {
     public void testClassifyTest() throws IOException {
         KNNClassification classification = new KNNClassification();
         int errorCount = classification.classifyTest();
-        assertEquals(36, errorCount);
+        assertEquals(20, errorCount);
     }
 }
