@@ -4,6 +4,7 @@ import static ml.util.Util.matrixToString;
 import static ml.util.Util.toOneDimArray;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import ml.supervised.knn.FileHelper;
@@ -36,30 +37,31 @@ public class LinearRegression {
         return xTx.inverse().times(inputValues.transpose().times(yMat));
     }
 
-    // def lwlr(testPoint,xArr,yArr,k=1.0):
-    // xMat = mat(xArr); yMat = mat(yArr).T
-    // m = shape(xMat)[0]
-    // weights = mat(eye((m)))
-    // for j in range(m):
-    // diffMat = testPoint - xMat[j,:]
-    // weights[j,j] = exp(diffMat*diffMat.T/(-2.0*k**2))
-    // xTx = xMat.T * (weights * xMat)
-    // if linalg.det(xTx) == 0.0:
-    // print "This matrix is singular, cannot do inverse"
-    // return
-    // ws = xTx.I * (xMat.T * (weights * yMat))
-    // return testPoint * ws
-    // B
-    // Create diagonal
-    // matrix
-    // C
-    // Populate weights
-    // with exponentially
-    // decaying values
-    // def lwlrTest(testArr,xArr,yArr,k=1.0):
-    // m = shape(testArr)[0]
-    // yHat = zeros(m)
-    // for i in range(m):
-    // yHat[i] = lwlr(testArr[i],xArr,yArr,k)
-    // return yHat
+    public Matrix lwlr(List<Double> testPoint, Matrix inputValues, List<Double> outputValues, int k) {
+        int m = inputValues.getRowDimension();
+        Matrix weights = null;
+        // weights = mat(eye((m)))
+        for (int i = 0; i < m; i++) {
+            // diffMat = testPoint - inputValues[j,:]
+            // weights[j,j] = exp(diffMat*diffMat.T/(-2.0*k**2))
+        }
+        Matrix xTx = inputValues.transpose().times(weights.times(inputValues));
+        if (new LUDecomposition(xTx).det() == 0.0) {
+            throw new IllegalArgumentException("This matrix is singular, cannot do inverse");
+        }
+        Matrix yMat = new Matrix(toOneDimArray(outputValues), 1);
+        yMat = yMat.transpose();
+        Matrix ws = xTx.inverse().times(inputValues.transpose().times(weights.times(yMat)));
+        // return testPoint * ws
+        return null;
+    }
+
+    public List<Double> lwlrTest(Matrix testArr, Matrix xArr, List<Double> yArr, int k) {
+        int m = testArr.getRowDimension();
+        List<Double> yHat = new ArrayList<>(m);
+        for (int j = 0; j < m; j++) {
+            // yHat[i] = lwlr(testArr[i],xArr,yArr,k)
+        }
+        return yHat;
+    }
 }
