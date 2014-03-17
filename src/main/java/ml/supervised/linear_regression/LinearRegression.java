@@ -37,9 +37,10 @@ public class LinearRegression {
         return xTx.inverse().times(inputValues.transpose().times(yMat));
     }
 
-    public Matrix lwlr(List<Double> testPoint, Matrix inputValues, List<Double> outputValues, int k) {
+    // locally weighted linear regression
+    public Matrix lwlr(double[] testPoint, Matrix inputValues, List<Double> outputValues, int k) {
         int m = inputValues.getRowDimension();
-        Matrix weights = null;
+        Matrix weights = new Matrix(m, m);
         // weights = mat(eye((m)))
         for (int i = 0; i < m; i++) {
             // diffMat = testPoint - inputValues[j,:]
@@ -60,7 +61,7 @@ public class LinearRegression {
         int m = testArr.getRowDimension();
         List<Double> yHat = new ArrayList<>(m);
         for (int j = 0; j < m; j++) {
-            // yHat[i] = lwlr(testArr[i],xArr,yArr,k)
+            // yHat.set(j, lwlr(testArr.getArray()[j], xArr, yArr, k));
         }
         return yHat;
     }
