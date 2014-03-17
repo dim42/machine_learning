@@ -36,6 +36,22 @@ public class Util {
         return array;
     }
 
+    public static double mean(double[] list) {
+        double sum = 0;
+        for (double val : list) {
+            sum += val;
+        }
+        return sum / list.length;
+    }
+
+    public static double mean(List<Double> list) {
+        double sum = 0;
+        for (Double val : list) {
+            sum += val;
+        }
+        return sum / list.size();
+    }
+
     public static BufferedReader getReader(String fileName) throws FileNotFoundException {
         return new BufferedReader(new InputStreamReader(KNNClassification.class.getResourceAsStream(fileName)));
     }

@@ -1,6 +1,7 @@
 package ml.unsupervised.clustering;
 
 import static ml.util.Util.getReader;
+import static ml.util.Util.mean;
 import static ml.util.Util.toTwoDimArray;
 
 import java.io.BufferedReader;
@@ -122,22 +123,6 @@ public class KMeansClustering {
             result.put(clN, clusterPoints);
         }
         return result;
-    }
-
-    private double mean(double[] list) {
-        double sum = 0;
-        for (double val : list) {
-            sum += val;
-        }
-        return sum / list.length;
-    }
-
-    private double mean(List<Double> list) {
-        double sum = 0;
-        for (Double val : list) {
-            sum += val;
-        }
-        return sum / list.size();
     }
 
     Matrix loadDataSet(String fileName) throws IOException {
