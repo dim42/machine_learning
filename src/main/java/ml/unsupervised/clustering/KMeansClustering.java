@@ -45,29 +45,64 @@ public class KMeansClustering {
         }
 
         while (centList.size() < clusterNumber) {
-        // lowestSSE = inf
-            for (int i = 0; i < centroid0.length; i++) {
-        // ptsInCurrCluster = dataSet[nonzero(clusterAssment[:,0].A==i)[0],:]#get the data points currently in cluster i
-        // centroidMat, splitClustAss = kMeans(ptsInCurrCluster, 2)
-        // sseSplit = sum(splitClustAss[:,1])#compare the SSE to the currrent minimum
-        // sseNotSplit = sum(clusterAssment[nonzero(clusterAssment[:,0].A!=i)[0],1])
-        // print "sseSplit, and notSplit: ",sseSplit,sseNotSplit
-        // if (sseSplit + sseNotSplit) < lowestSSE:
-        // bestCentToSplit = i
-        // bestNewCents = centroidMat
-        // bestClustAss = splitClustAss.copy()
-        // lowestSSE = sseSplit + sseNotSplit
+            double lowestSSE = Double.MAX_VALUE;
+            int bestCentToSplit = -1;
+            Matrix bestNewCents = null;
+            Matrix bestClustAss = null;
+            for (int clusterIndex = 0; clusterIndex < centroid0.length; clusterIndex++) {
+                Matrix ptsInCurrCluster = new Matrix(clusterAssment.getRowDimension(), 2);
+                for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
+                    if (clusterAssment.get(r, 0) == clusterIndex) {
+                        ptsInCurrCluster.set(r, 0, dataSet.get(r, 0));
+                        ptsInCurrCluster.set(r, 1, dataSet.get(r, 1));
+                    }
+                }
+
+                KMeansResult kMeansResult = kMeans(ptsInCurrCluster, 2);
+                Matrix centroidMat = kMeansResult.getCentroids();
+                double sseSplit = 0;
+                for (int r = 0; r < kMeansResult.getClusterAssment().getRowDimension(); r++) {
+                    sseSplit += kMeansResult.getClusterAssment().get(r, 1);
+                }
+
+                double sseNotSplit = 0;
+                for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
+                    if (clusterAssment.get(r, 0) != clusterIndex) {
+                        sseNotSplit += clusterAssment.get(r, 1);
+                    }
+                }
+                System.out.println("sseSplit: " + sseSplit);
+                System.out.println("sseNotSplit: " + sseNotSplit);
+
+                if (sseSplit + sseNotSplit < lowestSSE) {
+                    bestCentToSplit = clusterIndex;
+                    bestNewCents = centroidMat;
+                    bestClustAss = kMeansResult.getClusterAssment().copy();
+                    lowestSSE = sseSplit + sseNotSplit;
+                }
             }
-        // bestClustAss[nonzero(bestClustAss[:,0].A == 1)[0],0] = len(centList) #change 1 to 3,4, or whatever
-        // bestClustAss[nonzero(bestClustAss[:,0].A == 0)[0],0] = bestCentToSplit
-        // print 'the bestCentToSplit is: ',bestCentToSplit
-        // print 'the len of bestClustAss is: ', len(bestClustAss)
-        // centList[bestCentToSplit] = bestNewCents[0,:].tolist()[0]#replace a centroid with two best centroids
-        // centList.append(bestNewCents[1,:].tolist()[0])
-        // clusterAssment[nonzero(clusterAssment[:,0].A == bestCentToSplit)[0],:]= bestClustAss#reassign new clusters,
-        // and SSE
+            // Update the cluster assignments
+            for (int r = 0; r < bestClustAss.getRowDimension(); r++) {
+                double val = bestClustAss.get(r, 0);
+                if (val == 1) {
+                    bestClustAss.set(r, 0, centList.size());
+                } else if (val == 0) {
+                    bestClustAss.set(r, 0, bestCentToSplit);
+                }
+            }
+            System.out.println("the bestCentToSplit is: " + bestCentToSplit);
+            System.out.println("the length of bestClustAss is: " + bestClustAss.getRowDimension());
+
+            centList.set(bestCentToSplit, bestNewCents.getArray()[0]);
+            centList.add(bestNewCents.getArray()[1]);
+            // bestClustAss[nonzero(bestClustAss[:,0].A == 0)[0],0] = bestCentToSplit
+            for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
+                if ((int) clusterAssment.get(r, 0) == bestCentToSplit) {
+                    clusterAssment.set(r, 0, bestClustAss.get(r, 0));
+                }
+            }
+            // clusterAssment[nonzero(clusterAssment[:,0].A == bestCentToSplit)[0],:]= bestClustAss
         }
-        // return mat(centList), clusterAssment
         return new KMeansResult(new Matrix(toTwoDimArray(centList)), clusterAssment);
     }
 
