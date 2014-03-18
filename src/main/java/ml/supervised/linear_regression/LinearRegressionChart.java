@@ -52,7 +52,15 @@ public class LinearRegressionChart extends Application {
                     new XYChart.Data<Number, Number>(inputValues.get(r, 1), predictedValues.get(r, 0)));
         }
 
-        sc.getData().addAll(trainingSetPoints, predictedSetPoints);
+        Matrix lwlrPredictedValues = linearRegression.lwlrTest(inputValues, inputValues, outputValues, 0.01);
+        XYChart.Series<Number, Number> lwlrPredictedSetPoints = new XYChart.Series<Number, Number>();
+        lwlrPredictedSetPoints.setName("lwlr predicted set");
+        for (int r = 0; r < lwlrPredictedValues.getRowDimension(); r++) {
+            lwlrPredictedSetPoints.getData().add(
+                    new XYChart.Data<Number, Number>(inputValues.get(r, 1), lwlrPredictedValues.get(r, 0)));
+        }
+
+        sc.getData().addAll(trainingSetPoints, predictedSetPoints, lwlrPredictedSetPoints);
 
         Scene scene = new Scene(sc, 900, 800);
         stage.setScene(scene);

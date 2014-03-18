@@ -1,5 +1,6 @@
 package ml.unsupervised.clustering;
 
+import static ml.util.Util.getColumn;
 import static ml.util.Util.getReader;
 import static ml.util.Util.mean;
 import static ml.util.Util.toTwoDimArray;
@@ -172,9 +173,5 @@ public class KMeansClustering {
             }
         }
         return centroids;
-    }
-
-    private Matrix getColumn(Matrix dataSet, int i) {
-        return dataSet.getMatrix(0, dataSet.getRowDimension() - 1, i, i);
     }
 }

@@ -36,6 +36,14 @@ public class Util {
         return array;
     }
 
+    public static Matrix getColumn(Matrix matrix, int c) {
+        return matrix.getMatrix(0, matrix.getRowDimension() - 1, c, c);
+    }
+
+    public static Matrix getRow(Matrix matrix, int r) {
+        return matrix.getMatrix(r, r, 0, matrix.getColumnDimension() - 1);
+    }
+
     public static double mean(double[] list) {
         double sum = 0;
         for (double val : list) {
