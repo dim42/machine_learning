@@ -8,7 +8,9 @@ import static ml.util.Util.toTwoDimArray;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import Jama.Matrix;
 
@@ -24,8 +26,7 @@ public class KMeansClustering {
         KMeansResult result = clustering.kMeans(dataSet, CLUSTER_NUMBER);
         System.out.println("result: " + result);
 
-        PointsByClusters pointsByClusters = clustering.pointsByClusters(dataSet, result.getClusterAssment(),
-                CLUSTER_NUMBER);
+        PointsByClusters pointsByClusters = clustering.pointsByClusters(dataSet, result.getClusterAssment());
         System.out.println(pointsByClusters);
     }
 
@@ -146,19 +147,27 @@ public class KMeansClustering {
         return new KMeansResult(centroids, clusterAssment);
     }
 
-    public PointsByClusters pointsByClusters(Matrix dataSet, Matrix clusterAssment, int clusterNumber) {
+    public PointsByClusters pointsByClusters(Matrix dataSet, Matrix clusterAssment) {
         PointsByClusters result = new PointsByClusters();
-        for (int clN = 0; clN < clusterNumber; clN++) {
+        for (int clusterIndex = 0; clusterIndex < clusterNumber(clusterAssment); clusterIndex++) {
             List<double[]> clusterPoints = new ArrayList<>();
             for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
-                if (clusterAssment.get(r, 0) == clN) {
+                if (clusterAssment.get(r, 0) == clusterIndex) {
                     double[] point = dataSet.getArray()[r];
                     clusterPoints.add(point);
                 }
             }
-            result.put(clN, clusterPoints);
+            result.put(clusterIndex, clusterPoints);
         }
         return result;
+    }
+
+    private int clusterNumber(Matrix clusterAssment) {
+        Set<Integer> set = new HashSet<>();
+        for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
+            set.add((int) clusterAssment.get(r, 0));
+        }
+        return set.size();
     }
 
     Matrix loadDataSet(String fileName) throws IOException {

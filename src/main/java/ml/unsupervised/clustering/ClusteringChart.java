@@ -35,8 +35,7 @@ public class ClusteringChart extends Application {
         Matrix dataSet = clustering.loadDataSet(INPUT_FILE_NAME);
 
         KMeansResult kMeans = clustering.kMeans(dataSet, CLUSTER_NUMBER);
-        PointsByClusters pointsByClusters = clustering.pointsByClusters(dataSet, kMeans.getClusterAssment(),
-                CLUSTER_NUMBER);
+        PointsByClusters pointsByClusters = clustering.pointsByClusters(dataSet, kMeans.getClusterAssment());
 
         Matrix centroids = kMeans.getCentroids();
         XYChart.Series<Number, Number> centroidsPoints = new XYChart.Series<Number, Number>();
