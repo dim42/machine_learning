@@ -50,7 +50,7 @@ public class KMeansClustering {
             int bestCentToSplit = -1;
             Matrix bestNewCents = null;
             Matrix bestClustAss = null;
-            for (int clusterIndex = 0; clusterIndex < centroid0.length; clusterIndex++) {
+            for (int clusterIndex = 0; clusterIndex < centList.size(); clusterIndex++) {
                 Matrix ptsInCurrCluster = new Matrix(clusterAssment.getRowDimension(), 2);
                 for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
                     if (clusterAssment.get(r, 0) == clusterIndex) {
@@ -60,7 +60,6 @@ public class KMeansClustering {
                 }
 
                 KMeansResult kMeansResult = kMeans(ptsInCurrCluster, 2);
-                Matrix centroidMat = kMeansResult.getCentroids();
                 double sseSplit = 0;
                 for (int r = 0; r < kMeansResult.getClusterAssment().getRowDimension(); r++) {
                     sseSplit += kMeansResult.getClusterAssment().get(r, 1);
@@ -77,7 +76,7 @@ public class KMeansClustering {
 
                 if (sseSplit + sseNotSplit < lowestSSE) {
                     bestCentToSplit = clusterIndex;
-                    bestNewCents = centroidMat;
+                    bestNewCents = kMeansResult.getCentroids();
                     bestClustAss = kMeansResult.getClusterAssment().copy();
                     lowestSSE = sseSplit + sseNotSplit;
                 }
