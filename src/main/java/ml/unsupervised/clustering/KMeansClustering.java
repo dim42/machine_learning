@@ -51,13 +51,15 @@ public class KMeansClustering {
             Matrix bestNewCents = null;
             Matrix bestClustAss = null;
             for (int clusterIndex = 0; clusterIndex < centList.size(); clusterIndex++) {
-                Matrix ptsInCurrCluster = new Matrix(clusterAssment.getRowDimension(), 2);
+                List<double[]> currPoints = new ArrayList<>();
                 for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
                     if (clusterAssment.get(r, 0) == clusterIndex) {
-                        ptsInCurrCluster.set(r, 0, dataSet.get(r, 0));
-                        ptsInCurrCluster.set(r, 1, dataSet.get(r, 1));
+                        currPoints.add(new double[] { dataSet.get(r, 0), dataSet.get(r, 1) });
                     }
                 }
+                if (currPoints.isEmpty())
+                    continue;
+                Matrix ptsInCurrCluster = new Matrix(toTwoDimArray(currPoints));
 
                 KMeansResult kMeansResult = kMeans(ptsInCurrCluster, 2);
                 double sseSplit = 0;
@@ -96,9 +98,16 @@ public class KMeansClustering {
             centList.set(bestCentToSplit, bestNewCents.getArray()[0]);
             centList.add(bestNewCents.getArray()[1]);
             // bestClustAss[nonzero(bestClustAss[:,0].A == 0)[0],0] = bestCentToSplit
+            // for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
+            // if ((int) clusterAssment.get(r, 0) == bestCentToSplit) {
+            // clusterAssment.set(r, 0, bestClustAss.get(r, 0));
+            // }
+            // }
+
+            int ind = 0;
             for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
                 if ((int) clusterAssment.get(r, 0) == bestCentToSplit) {
-                    clusterAssment.set(r, 0, bestClustAss.get(r, 0));
+                    clusterAssment.set(r, 0, bestClustAss.get(ind++, 0));
                 }
             }
             // clusterAssment[nonzero(clusterAssment[:,0].A == bestCentToSplit)[0],:]= bestClustAss
