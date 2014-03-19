@@ -33,49 +33,28 @@ public class KMeansClustering {
     public KMeansResult biKmeans(Matrix dataSet, int clusterNumber) {
         // Initially create one cluster
         Matrix clusterAssment = new Matrix(dataSet.getRowDimension(), 2);
-        double[] xColumnArray = getColumn(dataSet, 0).getColumnPackedCopy();
-        double xMean = mean(xColumnArray);
-        double[] yColumnArray = getColumn(dataSet, 1).getColumnPackedCopy();
-        double yMean = mean(yColumnArray);
-        double[] centroid0 = new double[] { xMean, yMean };
-        List<double[]> centList = new ArrayList<>();
-        centList.add(centroid0);
+        double[] centroid0 = new double[] { columnMean(dataSet, 0), columnMean(dataSet, 1) };
         for (int r = 0; r < dataSet.getRowDimension(); r++) {
             double dist = distEclud(centroid0, dataSet.getArray()[r]);
             clusterAssment.set(r, 1, dist * dist);
         }
 
+        List<double[]> centList = new ArrayList<>();
+        centList.add(centroid0);
         while (centList.size() < clusterNumber) {
             double lowestSSE = Double.MAX_VALUE;
             int bestCentToSplit = -1;
             Matrix bestNewCents = null;
             Matrix bestClustAss = null;
             for (int clusterIndex = 0; clusterIndex < centList.size(); clusterIndex++) {
-                List<double[]> currPoints = new ArrayList<>();
-                for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
-                    if (clusterAssment.get(r, 0) == clusterIndex) {
-                        currPoints.add(new double[] { dataSet.get(r, 0), dataSet.get(r, 1) });
-                    }
-                }
-                if (currPoints.isEmpty())
+                List<double[]> currClusterPoints = currClusterPoints(dataSet, clusterAssment, clusterIndex);
+                if (currClusterPoints.isEmpty())
                     continue;
-                Matrix ptsInCurrCluster = new Matrix(toTwoDimArray(currPoints));
+                Matrix ptsInCurrCluster = new Matrix(toTwoDimArray(currClusterPoints));
 
                 KMeansResult kMeansResult = kMeans(ptsInCurrCluster, 2);
-                double sseSplit = 0;
-                for (int r = 0; r < kMeansResult.getClusterAssment().getRowDimension(); r++) {
-                    sseSplit += kMeansResult.getClusterAssment().get(r, 1);
-                }
-
-                double sseNotSplit = 0;
-                for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
-                    if (clusterAssment.get(r, 0) != clusterIndex) {
-                        sseNotSplit += clusterAssment.get(r, 1);
-                    }
-                }
-                System.out.println("sseSplit: " + sseSplit);
-                System.out.println("sseNotSplit: " + sseNotSplit);
-
+                double sseSplit = sseSplit(kMeansResult.getClusterAssment());
+                double sseNotSplit = sseNotSplit(clusterAssment, clusterIndex);
                 if (sseSplit + sseNotSplit < lowestSSE) {
                     bestCentToSplit = clusterIndex;
                     bestNewCents = kMeansResult.getCentroids();
@@ -97,12 +76,6 @@ public class KMeansClustering {
 
             centList.set(bestCentToSplit, bestNewCents.getArray()[0]);
             centList.add(bestNewCents.getArray()[1]);
-            // bestClustAss[nonzero(bestClustAss[:,0].A == 0)[0],0] = bestCentToSplit
-            // for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
-            // if ((int) clusterAssment.get(r, 0) == bestCentToSplit) {
-            // clusterAssment.set(r, 0, bestClustAss.get(r, 0));
-            // }
-            // }
 
             int ind = 0;
             for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
@@ -110,9 +83,43 @@ public class KMeansClustering {
                     clusterAssment.set(r, 0, bestClustAss.get(ind++, 0));
                 }
             }
-            // clusterAssment[nonzero(clusterAssment[:,0].A == bestCentToSplit)[0],:]= bestClustAss
         }
         return new KMeansResult(new Matrix(toTwoDimArray(centList)), clusterAssment);
+    }
+
+    private double columnMean(Matrix dataSet, int column) {
+        double[] xColumnArray = getColumn(dataSet, column).getColumnPackedCopy();
+        return mean(xColumnArray);
+    }
+
+    private List<double[]> currClusterPoints(Matrix dataSet, Matrix clusterAssment, int clusterIndex) {
+        List<double[]> currPoints = new ArrayList<>();
+        for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
+            if (clusterAssment.get(r, 0) == clusterIndex) {
+                currPoints.add(new double[] { dataSet.get(r, 0), dataSet.get(r, 1) });
+            }
+        }
+        return currPoints;
+    }
+
+    private double sseSplit(Matrix clusterAssment) {
+        double sseSplit = 0;
+        for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
+            sseSplit += clusterAssment.get(r, 1);
+        }
+        System.out.println("sseSplit: " + sseSplit);
+        return sseSplit;
+    }
+
+    private double sseNotSplit(Matrix clusterAssment, int clusterIndex) {
+        double sseNotSplit = 0;
+        for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
+            if (clusterAssment.get(r, 0) != clusterIndex) {
+                sseNotSplit += clusterAssment.get(r, 1);
+            }
+        }
+        System.out.println("sseNotSplit: " + sseNotSplit);
+        return sseNotSplit;
     }
 
     public KMeansResult kMeans(Matrix dataSet, int clusterNumber) {
