@@ -1,8 +1,5 @@
 package ml.unsupervised.clustering;
 
-import static ml.unsupervised.clustering.KMeansClustering.CLUSTER_NUMBER;
-import static ml.unsupervised.clustering.KMeansClustering.INPUT_FILE_NAME;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
@@ -16,6 +13,9 @@ import javafx.stage.Stage;
 import Jama.Matrix;
 
 public class BiClusteringChart extends Application {
+
+    private static final String INPUT_FILE_NAME = "/clusteringTestSet2.txt";
+    private static final int CLUSTER_NUMBER = 3;
 
     public static void main(String[] args) {
         launch(args);

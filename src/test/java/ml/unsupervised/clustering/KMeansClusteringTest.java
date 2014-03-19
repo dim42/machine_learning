@@ -18,5 +18,8 @@ public class KMeansClusteringTest {
 
         KMeansResult result = clustering.kMeans(dataSet, CLUSTER_NUMBER);
         System.out.println(result);
+
+        result = clustering.biKmeans(dataSet, CLUSTER_NUMBER);
+        System.out.println(result);
     }
 }
