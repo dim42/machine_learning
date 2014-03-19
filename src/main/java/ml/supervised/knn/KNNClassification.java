@@ -10,11 +10,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import ml.util.FileHelper;
 import Jama.Matrix;
 
 public class KNNClassification {
+
+    private static final Logger log = Logger.getLogger(KNNClassification.class.getName());
+
     private static final String INPUT_FILE_NAME = "/KNNClassificationDataSet.txt";
     private static final double TEST_RATIO = 0.2;
     private static final int K_NUMBER = 3;
@@ -52,19 +56,8 @@ public class KNNClassification {
                 errorCount++;
             }
         }
-
-        System.out.println("The total error rate is: " + errorCount / (float) testSetLength);
-        System.out.println("Error number: " + errorCount);
-        // The classifier came back with: 1, the real answer is: 1
-        // The classifier came back with: 3, the real answer is: 3
-        // The classifier came back with: 1, the real answer is: 1
-        // The classifier came back with: 2, the real answer is: 1
-        // The classifier came back with: 2, the real answer is: 2
-        // The classifier came back with: 1, the real answer is: 1
-        // The classifier came back with: 1, the real answer is: 1
-        // The classifier came back with: 2, the real answer is: 2
-        // The total error rate is: 0.072
-        // Error number: 36
+        log.info("The total error rate is: " + errorCount / (float) testSetLength);
+        log.info("Error number: " + errorCount);
         return errorCount;
     }
 

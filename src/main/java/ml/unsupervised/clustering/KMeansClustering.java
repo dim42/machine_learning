@@ -11,10 +11,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import Jama.Matrix;
 
 public class KMeansClustering {
+
+    private static final Logger log = Logger.getLogger(KMeansClustering.class.getName());
 
     static final String INPUT_FILE_NAME = "/clusteringTestSet.txt";
     static final int CLUSTER_NUMBER = 4;
@@ -24,10 +27,10 @@ public class KMeansClustering {
         Matrix dataSet = clustering.loadDataSet(INPUT_FILE_NAME);
 
         KMeansResult result = clustering.kMeans(dataSet, CLUSTER_NUMBER);
-        System.out.println("result: " + result);
+        log.info("result: " + result);
 
         PointsByClusters pointsByClusters = clustering.pointsByClusters(dataSet, result.getClusterAssment());
-        System.out.println(pointsByClusters);
+        log.info("pointsByClusters: " + pointsByClusters);
     }
 
     public KMeansResult biKmeans(Matrix dataSet, int clusterNumber) {
@@ -71,8 +74,9 @@ public class KMeansClustering {
                     bestClustAss.set(r, 0, bestCentToSplit);
                 }
             }
-            System.out.println("the bestCentToSplit is: " + bestCentToSplit);
-            System.out.println("the length of bestClustAss is: " + bestClustAss.getRowDimension());
+
+            log.info("the bestCentToSplit is: " + bestCentToSplit);
+            log.info("the length of bestClustAss is: " + bestClustAss.getRowDimension());
 
             centList.set(bestCentToSplit, bestNewCents.getArray()[0]);
             centList.add(bestNewCents.getArray()[1]);
@@ -107,7 +111,7 @@ public class KMeansClustering {
         for (int r = 0; r < clusterAssment.getRowDimension(); r++) {
             sseSplit += clusterAssment.get(r, 1);
         }
-        System.out.println("sseSplit: " + sseSplit);
+        log.info("sseSplit: " + sseSplit);
         return sseSplit;
     }
 
@@ -118,7 +122,7 @@ public class KMeansClustering {
                 sseNotSplit += clusterAssment.get(r, 1);
             }
         }
-        System.out.println("sseNotSplit: " + sseNotSplit);
+        log.info("sseNotSplit: " + sseNotSplit);
         return sseNotSplit;
     }
 

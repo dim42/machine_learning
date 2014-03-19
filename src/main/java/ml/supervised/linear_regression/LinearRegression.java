@@ -7,12 +7,15 @@ import static ml.util.Util.toOneDimArray;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 import ml.util.FileHelper;
 import Jama.LUDecomposition;
 import Jama.Matrix;
 
 public class LinearRegression {
+
+    private static final Logger log = Logger.getLogger(LinearRegression.class.getName());
 
     static final String INPUT_FILE_NAME = "/LinearRegressionDataSet.txt";
 
@@ -22,13 +25,13 @@ public class LinearRegression {
         List<Double> outputValues = fileHelper.getOutputValues();
         LinearRegression linearRegression = new LinearRegression();
         Matrix ws = linearRegression.standRegres(inputValues, outputValues);
-        System.out.println(matrixToString(ws));
+        log.info(matrixToString(ws));
 
         Matrix predicted = inputValues.times(ws);
-        System.out.println(matrixToString(predicted));
+        log.info(matrixToString(predicted));
 
         Matrix predicted2 = linearRegression.lwlrTest(inputValues, inputValues, outputValues, 0.01);
-        System.out.println(matrixToString(predicted2));
+        log.info(matrixToString(predicted2));
     }
 
     public Matrix standRegres(Matrix inputValues, List<Double> outputValues) {
