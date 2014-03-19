@@ -11,7 +11,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
-import ml.supervised.knn.FileHelper;
+import ml.util.FileHelper;
 import Jama.Matrix;
 
 public class LinearRegressionChart extends Application {

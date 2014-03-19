@@ -8,7 +8,7 @@ import static ml.util.Util.toOneDimArray;
 import java.io.IOException;
 import java.util.List;
 
-import ml.supervised.knn.FileHelper;
+import ml.util.FileHelper;
 import Jama.LUDecomposition;
 import Jama.Matrix;
 
