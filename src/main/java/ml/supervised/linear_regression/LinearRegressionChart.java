@@ -29,7 +29,7 @@ public class LinearRegressionChart extends Application {
         final ScatterChart<Number, Number> sc = new ScatterChart<Number, Number>(xAxis, yAxis);
         xAxis.setLabel("X");
         yAxis.setLabel("Y");
-        sc.setTitle("Clustering");
+        sc.setTitle("Linear Regression");
 
         FileHelper fileHelper = new FileHelper(INPUT_FILE_NAME);
         Matrix inputValues = fileHelper.getMatrix();
