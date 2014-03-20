@@ -24,7 +24,7 @@ public class LinearRegression {
         Matrix inputValues = fileHelper.getMatrix();
         List<Double> outputValues = fileHelper.getOutputValues();
         LinearRegression linearRegression = new LinearRegression();
-        Matrix ws = linearRegression.standRegres(inputValues, outputValues);
+        Matrix ws = linearRegression.standardRegression(inputValues, outputValues);
         log.info(matrixToString(ws));
 
         Matrix predicted = inputValues.times(ws);
@@ -34,7 +34,14 @@ public class LinearRegression {
         log.info(matrixToString(predicted2));
     }
 
-    public Matrix standRegres(Matrix inputValues, List<Double> outputValues) {
+    /**
+     * Standard linear regression.
+     * 
+     * @param inputValues
+     * @param outputValues
+     * @return weights
+     */
+    public Matrix standardRegression(Matrix inputValues, List<Double> outputValues) {
         Matrix xTx = inputValues.transpose().times(inputValues);
         if (new LUDecomposition(xTx).det() == 0.0) {
             throw new IllegalArgumentException("This matrix is singular, cannot do inverse");
@@ -44,7 +51,15 @@ public class LinearRegression {
         return xTx.inverse().times(inputValues.transpose().times(yMat));
     }
 
-    // locally weighted linear regression
+    /**
+     * Locally weighted linear regression.
+     * 
+     * @param testPoint
+     * @param inputValues
+     * @param outputValues
+     * @param k
+     * @return predicted output values
+     */
     public Matrix lwlr(double[] testPoint, Matrix inputValues, List<Double> outputValues, double k) {
         int m = inputValues.getRowDimension();
         Matrix weights = new Matrix(m, m);

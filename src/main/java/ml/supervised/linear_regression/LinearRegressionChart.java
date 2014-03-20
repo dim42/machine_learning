@@ -35,7 +35,7 @@ public class LinearRegressionChart extends Application {
         Matrix inputValues = fileHelper.getMatrix();
         List<Double> outputValues = fileHelper.getOutputValues();
         LinearRegression linearRegression = new LinearRegression();
-        Matrix ws = linearRegression.standRegres(inputValues, outputValues);
+        Matrix ws = linearRegression.standardRegression(inputValues, outputValues);
         Matrix predictedValues = inputValues.times(ws);
 
         XYChart.Series<Number, Number> trainingSetPoints = new XYChart.Series<Number, Number>();
@@ -52,7 +52,7 @@ public class LinearRegressionChart extends Application {
                     new XYChart.Data<Number, Number>(inputValues.get(r, 1), predictedValues.get(r, 0)));
         }
 
-        Matrix lwlrPredictedValues = linearRegression.lwlrTest(inputValues, inputValues, outputValues, 0.01);
+        Matrix lwlrPredictedValues = linearRegression.lwlrTest(inputValues, inputValues, outputValues, 0.003);
         XYChart.Series<Number, Number> lwlrPredictedSetPoints = new XYChart.Series<Number, Number>();
         lwlrPredictedSetPoints.setName("lwlr predicted set");
         for (int r = 0; r < lwlrPredictedValues.getRowDimension(); r++) {

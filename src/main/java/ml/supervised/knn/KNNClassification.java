@@ -61,6 +61,29 @@ public class KNNClassification {
         return errorCount;
     }
 
+    public Matrix autoNormalize(Matrix dataSet) {
+        double[] minVals = new double[dataSet.getColumnDimension()];
+        Arrays.fill(minVals, Double.MAX_VALUE);
+        double[] maxVals = new double[dataSet.getColumnDimension()];
+        Arrays.fill(maxVals, Double.MIN_VALUE);
+        for (int i = 0; i < dataSet.getRowDimension(); i++) {
+            for (int j = 0; j < dataSet.getColumnDimension(); j++) {
+                double el0 = dataSet.get(i, j);
+                if (el0 < minVals[j]) {
+                    minVals[j] = el0;
+                }
+                if (el0 > maxVals[j]) {
+                    maxVals[j] = el0;
+                }
+            }
+        }
+        Matrix minMx = arrayToMatrix(minVals, dataSet.getRowDimension());
+        Matrix maxMx = arrayToMatrix(maxVals, dataSet.getRowDimension());
+        Matrix range = maxMx.minus(minMx);
+        Matrix diff = dataSet.minus(minMx);
+        return diff.arrayRightDivide(range);
+    }
+
     public int classify(double[] inX, Matrix dataSet, List<Integer> labels, int k) {
         Matrix inXmatrix = arrayToMatrix(inX, dataSet.getRowDimension());
         Matrix diffMat = inXmatrix.minus(dataSet);
@@ -84,16 +107,6 @@ public class KNNClassification {
         return distances;
     }
 
-    private int getMaxVotedClass(Map<Integer, Integer> classCount) {
-        int maxVotedClass = -1;
-        for (Entry<Integer, Integer> entry : classCount.entrySet()) {
-            if (entry.getValue() > maxVotedClass) {
-                maxVotedClass = entry.getKey();
-            }
-        }
-        return maxVotedClass;
-    }
-
     private Map<Integer, Integer> getClassCountMap(List<Integer> labels, int k, Integer[] sortedDistancesIndices) {
         Map<Integer, Integer> result = new LinkedHashMap<>();
         for (int i = 0; i < k; i++) {
@@ -104,26 +117,13 @@ public class KNNClassification {
         return result;
     }
 
-    public Matrix autoNormalize(Matrix dataSet) {
-        double[] minVals = new double[dataSet.getColumnDimension()];
-        Arrays.fill(minVals, Double.MAX_VALUE);
-        double[] maxVals = new double[dataSet.getColumnDimension()];
-        Arrays.fill(maxVals, Double.MIN_VALUE);
-        for (int i = 0; i < dataSet.getRowDimension(); i++) {
-            for (int j = 0; j < dataSet.getColumnDimension(); j++) {
-                double el0 = dataSet.get(i, j);
-                if (el0 < minVals[j]) {
-                    minVals[j] = el0;
-                }
-                if (el0 > maxVals[j]) {
-                    maxVals[j] = el0;
-                }
+    private int getMaxVotedClass(Map<Integer, Integer> classCount) {
+        int maxVotedClass = -1;
+        for (Entry<Integer, Integer> entry : classCount.entrySet()) {
+            if (entry.getValue() > maxVotedClass) {
+                maxVotedClass = entry.getKey();
             }
         }
-        Matrix minMx = arrayToMatrix(minVals, dataSet.getRowDimension());
-        Matrix maxMx = arrayToMatrix(maxVals, dataSet.getRowDimension());
-        Matrix range = maxMx.minus(minMx);
-        Matrix diff = dataSet.minus(minMx);
-        return diff.arrayRightDivide(range);
+        return maxVotedClass;
     }
 }

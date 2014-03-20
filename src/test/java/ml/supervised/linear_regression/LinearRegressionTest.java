@@ -21,7 +21,7 @@ public class LinearRegressionTest {
         List<Double> outputValues = fileHelper.getOutputValues();
         LinearRegression linearRegression = new LinearRegression();
 
-        Matrix ws = linearRegression.standRegres(inputValues, outputValues);
+        Matrix ws = linearRegression.standardRegression(inputValues, outputValues);
 
         assertArrayEquals(new Double[][] { { 3.007743242697588 }, { 1.6953226421712237 } }, ws.getArray());
     }
