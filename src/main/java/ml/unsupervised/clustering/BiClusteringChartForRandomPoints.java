@@ -14,8 +14,9 @@ import Jama.Matrix;
 
 public class BiClusteringChartForRandomPoints extends Application {
 
-    private static final String INPUT_FILE_NAME = "/clusteringTestSet2.txt";
-    private static final int CLUSTER_NUMBER = 3;
+    private static final int CLUSTER_NUMBER = 5;
+    private static final int POINTS_NUMBER = 80;
+    private static final int RANGE_FROM_ZERO = 6;
 
     public static void main(String[] args) {
         launch(args);
@@ -32,14 +33,9 @@ public class BiClusteringChartForRandomPoints extends Application {
         sc.setTitle("Clustering");
 
         KMeansClustering clustering = new KMeansClustering();
-        Matrix dataSet = new Matrix(80, 2);
-        for (int r = 0; r < dataSet.getRowDimension(); r++) {
-            for (int c = 0; c < dataSet.getColumnDimension(); c++) {
-                dataSet.set(r, c, (Math.random() * 2 - 1) * 6);
-            }
-        }
+        Matrix dataSet = generateRandomPoints();
 
-        KMeansResult kMeans = clustering.biKmeans(dataSet, 5);
+        KMeansResult kMeans = clustering.biKmeans(dataSet, CLUSTER_NUMBER);
         PointsByClusters pointsByClusters = clustering.pointsByClusters(dataSet, kMeans.getClusterAssment());
 
         Matrix centroids = kMeans.getCentroids();
@@ -64,5 +60,15 @@ public class BiClusteringChartForRandomPoints extends Application {
         Scene scene = new Scene(sc, 900, 800);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private Matrix generateRandomPoints() {
+        Matrix dataSet = new Matrix(POINTS_NUMBER, 2);
+        for (int r = 0; r < dataSet.getRowDimension(); r++) {
+            for (int c = 0; c < dataSet.getColumnDimension(); c++) {
+                dataSet.set(r, c, (Math.random() * 2 - 1) * RANGE_FROM_ZERO);
+            }
+        }
+        return dataSet;
     }
 }
